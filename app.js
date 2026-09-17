@@ -137,14 +137,33 @@
       `<button data-p="${p}" class="${p === page ? "on" : ""}"><img loading="lazy" style="aspect-ratio:${L.ar || "4/3"}" src="pages/${lid}/p${pad(p)}.jpg" alt="第${p}頁"><span class="no">${p}</span>${al?.pages?.[p] ? '<span class="aud">🎧</span>' : ""}${notes[lid + ":" + p] ? '<span class="aud" style="top:22px">📝</span>' : ""}</button>`).join("");
     const pa = al?.pages?.[page];
     const key = (L.keys || {})[page];
-    let audioHtml;
+    let audioHtml, seg = null;
     if (!L.audio) audioHtml = `<div class="muted small">這份講義沒有錄音。</div>`;
     else if (!al) audioHtml = `<div class="muted small">錄音正在轉逐字稿、對齊頁碼，完成後這裡會出現「老師講這頁」的原音片段。</div>`;
-    else if (!pa) audioHtml = `<div class="muted small">這一頁老師沒有停留講解（或對齊不到），可以用下方完整錄音自行跳轉。</div><audio id="au" controls preload="none" src="${al.audio}"></audio>`;
-    else audioHtml = `<div><button class="btn primary" id="playSeg">▶ 播放老師講這頁</button> <span class="pill">${fmt(pa.s)}–${fmt(pa.e)}</span><span class="pill">${Math.round((pa.e - pa.s) / 60)} 分鐘</span></div>
+    else {
+      // 這頁沒對到：改用前後最近兩頁之間的段落
+      let label = "▶ 播放老師講這頁";
+      seg = pa;
+      if (!pa) {
+        const ks = Object.keys(al.pages).map(Number).sort((a, b) => a - b);
+        const before = ks.filter((k) => k < page).pop(), after = ks.find((k) => k > page);
+        if (before != null || after != null) {
+          const A = al.pages[before ?? after], B = al.pages[after ?? before];
+          seg = { s: Math.min(A.s, B.s), e: Math.max(A.e, B.e), lines: [] };
+          label = `▶ 播放附近段落（第 ${before ?? after}${after != null && before != null ? "–" + after : ""} 頁）`;
+        }
+      }
+      const btns = [-30, 30].map((d) => `<button class="btn small" data-jump="${d}">${d < 0 ? "⏪ 往前" : "往後 ⏩"} 30 秒</button>`).join(" ");
+      const extras = (al.extras || []).map((x) => `<div class="small">・<span class="ts" data-t="${x.s}" data-e="${x.e}">[${fmt(x.s)}–${fmt(x.e)}]</span> ${esc(x.label || "講義外")}：${esc(x.preview)}…</div>`).join("");
+      audioHtml = `${!pa ? `<div class="muted small">這一頁老師沒有單獨停留講解（或自動對齊沒抓到）。</div>` : ""}
+        ${seg ? `<div><button class="btn primary" id="playSeg">${label}</button> <span class="pill">${fmt(seg.s)}–${fmt(seg.e)}</span></div>` : ""}
         <audio id="au" controls preload="metadata" src="${al.audio}" style="margin-top:8px"></audio>
-        <div class="small muted">播完這頁的段落會自動暫停。速度：<span class="seg" id="rate">${[1, 1.25, 1.5, 1.75, 2].map((r) => `<button data-r="${r}">${r}×</button>`).join("")}</span></div>
-        <h3>逐字稿（自動轉錄，術語請以講義為準）</h3><div class="transcript" id="tr">${(pa.lines || []).map(([t, s]) => `<span class="ts" data-t="${t}">[${fmt(t)}]</span> ${esc(s)}`).join("\n")}</div>`;
+        <div class="slide-nav small">${btns}</div>
+        <div class="small muted">頁碼是自動對齊的，可能差 1–2 頁；沒聽到想要的內容，可以往前後拉一點。播完段落會自動暫停。</div>
+        <div class="small muted">速度：<span class="seg" id="rate">${[1, 1.25, 1.5, 1.75, 2].map((r) => `<button data-r="${r}">${r}×</button>`).join("")}</span></div>
+        ${pa && pa.lines?.length ? `<details style="margin-top:8px"><summary>逐字稿（自動轉錄，錯字多，僅供找段落）</summary><div class="transcript" id="tr">${pa.lines.map(([tt, s2]) => `<span class="ts" data-t="${tt}">[${fmt(tt)}]</span> ${esc(s2)}`).join("\n")}</div></details>` : ""}
+        ${extras ? `<details style="margin-top:8px" id="ext"><summary>講義外的段落（課程說明、口頭補充）</summary>${extras}</details>` : ""}`;
+    }
     main.innerHTML = `<div class="lec-wrap">
       <div class="thumbs" id="thumbs">${thumbs}</div>
       <div>
@@ -173,8 +192,10 @@
       }
       audioEl.addEventListener("timeupdate", () => { if (stopAt && audioEl.currentTime >= stopAt) { audioEl.pause(); stopAt = null; } });
       const seek = (t, end) => { const go = () => { audioEl.currentTime = t; stopAt = end || null; audioEl.play(); }; if (audioEl.readyState >= 1) go(); else { audioEl.addEventListener("loadedmetadata", go, { once: true }); audioEl.load(); } };
-      if (pa) $("#playSeg").onclick = () => seek(pa.s, pa.e);
-      const tr = $("#tr"); if (tr) tr.onclick = (e) => { const s = e.target.closest(".ts"); if (s) seek(+s.dataset.t, pa.e); };
+      if (seg) $("#playSeg").onclick = () => seek(seg.s, seg.e);
+      const tr = $("#tr"); if (tr) tr.onclick = (e) => { const s = e.target.closest(".ts"); if (s) seek(+s.dataset.t, seg.e); };
+      const ext = $("#ext"); if (ext) ext.onclick = (e) => { const s = e.target.closest(".ts"); if (s) seek(+s.dataset.t, +s.dataset.e); };
+      document.querySelectorAll("[data-jump]").forEach((b) => (b.onclick = () => { audioEl.currentTime = Math.max(0, audioEl.currentTime + +b.dataset.jump); if (audioEl.paused) audioEl.play(); }));
     }
   }
   function relatedQs(lid, page) {
