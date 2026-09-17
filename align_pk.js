@@ -1,0 +1,1 @@
+window.ALIGN = window.ALIGN || {};

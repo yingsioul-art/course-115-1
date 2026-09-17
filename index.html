@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>115-1 修課互動教材</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top"><h1>🎓 115-1 修課互動教材</h1><button class="btn small" id="themeBtn" title="切換深淺色">◐</button></header>
+<main>
+  <div class="card"><h2>兩門課，一套學法</h2>
+    <div class="muted">先<b>前測</b>找卡關處 → 回<b>講義</b>聽老師講那一頁 → 用<b>臨床情境</b>練判讀 → <b>錯題本</b>連對兩次才算過。筆記、錯題、作答紀錄都只存在這台電腦的瀏覽器裡。</div>
+  </div>
+  <div class="tiles">
+    <a class="tile" href="bio.html"><div class="ic">📊</div><div class="tt">應用生物統計學</div><div class="ds">描述統計、機率分布、R 實習課<br>含線上跑 R、分布探索器</div></a>
+    <a class="tile" href="pk.html"><div class="ic">💊</div><div class="tt">藥物動力學在新藥開發中的應用</div><div class="ds">ADME、PK 參數<br>含血中濃度模擬器</div></a>
+  </div>
+  <details class="card" style="margin-top:14px"><summary>關於公開版</summary>
+    <ul>
+      <li>這是公開版，<b>不含講義頁面與上課錄音</b>；各頁只列重點整理。完整版請用本機資料夾裡的「開啟教材.bat」。</li>
+      <li>「線上跑 R」第一次需要下載 webR（約 10–30 秒）；練習資料為模擬資料。</li>
+      <li>作答紀錄、錯題本與筆記只存在你這台裝置的瀏覽器裡。</li>
+    </ul>
+  </details>
+</main>
+<script>
+document.getElementById("themeBtn").onclick = () => {
+  const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const nx = cur === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = nx;
+  try { localStorage.setItem("c115:theme", nx); } catch (e) {}
+};
+try { const t = localStorage.getItem("c115:theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+</body>
+</html>
