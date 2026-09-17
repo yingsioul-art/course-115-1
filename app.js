@@ -157,6 +157,7 @@
       const extras = (al.extras || []).map((x) => `<div class="small">・<span class="ts" data-t="${x.s}" data-e="${x.e}">[${fmt(x.s)}–${fmt(x.e)}]</span> ${esc(x.label || "講義外")}：${esc(x.preview)}…</div>`).join("");
       audioHtml = `${!pa ? `<div class="muted small">這一頁老師沒有單獨停留講解（或自動對齊沒抓到）。</div>` : ""}
         ${seg ? `<div><button class="btn primary" id="playSeg">${label}</button> <span class="pill">${fmt(seg.s)}–${fmt(seg.e)}</span></div>` : ""}
+        ${pa && pa.other?.length ? `<div class="small" style="margin-top:6px" id="oth">這頁老師還講過：${pa.other.map(([s2, e2]) => `<button class="btn small" data-s="${s2}" data-e="${e2}">${fmt(s2)}</button>`).join(" ")}</div>` : ""}
         <audio id="au" controls preload="metadata" src="${al.audio}" style="margin-top:8px"></audio>
         <div class="slide-nav small">${btns}</div>
         <div class="small muted">頁碼是自動對齊的，可能差 1–2 頁；沒聽到想要的內容，可以往前後拉一點。播完段落會自動暫停。</div>
@@ -194,6 +195,7 @@
       const seek = (t, end) => { const go = () => { audioEl.currentTime = t; stopAt = end || null; audioEl.play(); }; if (audioEl.readyState >= 1) go(); else { audioEl.addEventListener("loadedmetadata", go, { once: true }); audioEl.load(); } };
       if (seg) $("#playSeg").onclick = () => seek(seg.s, seg.e);
       const tr = $("#tr"); if (tr) tr.onclick = (e) => { const s = e.target.closest(".ts"); if (s) seek(+s.dataset.t, seg.e); };
+      const oth = $("#oth"); if (oth) oth.onclick = (e) => { const b = e.target.closest("button"); if (b) seek(+b.dataset.s, +b.dataset.e); };
       const ext = $("#ext"); if (ext) ext.onclick = (e) => { const s = e.target.closest(".ts"); if (s) seek(+s.dataset.t, +s.dataset.e); };
       document.querySelectorAll("[data-jump]").forEach((b) => (b.onclick = () => { audioEl.currentTime = Math.max(0, audioEl.currentTime + +b.dataset.jump); if (audioEl.paused) audioEl.play(); }));
     }

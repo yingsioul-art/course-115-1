@@ -32,7 +32,7 @@ window.COURSE = {
         14: "種族因素：<b>內在</b>（基因、年齡、肝腎功能、體重、受體敏感性）vs <b>外在</b>（環境、飲食、吸菸飲酒、醫療常規、法規）。",
         15: "老年人：胃酸↓、體水分↓、體脂↑（極性藥 Vd↓、脂溶性藥 Vd↑）、白蛋白↓（酸性高結合藥 fu↑）、肝血流↓、GFR↓（腎排藥 t½↑）。<br>Bridging study 八項考量：非線性 PK、PD 曲線陡、治療區間窄、單一代謝途徑、多型性酵素、對種族敏感、F 個體差異大、F 低易受飲食影響。",
       } },
-    { id: "pk_L2", icon: "📐", title: "2. Basic concepts in PK parameters", short: "PK參數", date: "2026-09-18", pages: 10, ar: "3/4", audio: true,
+    { id: "pk_L2", icon: "📐", title: "2. Basic concepts in PK parameters", short: "PK參數", date: "2026-09-18", pages: 10, ar: "3/4", audio: false,
       keys: {
         2: "一室開放模型三假設：瞬間分布、一階排除、全身視為單一室。<br>C＝C₀·e<sup>−kt</sup>；半對數圖呈直線、斜率＝−k。<b>AUC＝C₀/k＝D/CL</b>。",
         3: "<b>t½＝0.693/k</b>；k＝ke＋km＋k<sub>others</sub>。半衰期也能用尿液排泄速率推估。<br>定速輸注：<b>Css＝R₀/CL</b>——穩定態濃度只由輸注速率與清除率決定，與 Vd 無關；到達速度由 t½ 決定。",
