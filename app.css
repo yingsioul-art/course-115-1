@@ -139,3 +139,22 @@ svg.chart text{font-family:var(--font);fill:var(--muted);font-size:12px}
 .seg button:last-child{border-right:0}
 .seg button.on{background:var(--accent);color:#fff}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:8px;font-size:15px;z-index:99}
+
+/* R 語法逐行教學 */
+.rl-nav{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));margin-bottom:14px}
+.rl-nav .tile{padding:10px 12px}
+.rl-nav .tile .ic{font-size:22px}
+.rl-nav .tile .tt{font-size:14px;line-height:1.4}
+.rl-nav .rl-on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.rl-formula{font-family:var(--mono);font-size:17px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0;overflow-x:auto;white-space:nowrap}
+.rl-formula .c1{color:#8a4b08}.rl-formula .c2{color:var(--bad);font-weight:700}.rl-formula .c3{color:var(--accent);font-weight:700}.rl-formula .c4{color:#6a3d9a}.rl-formula .c5{color:var(--ok)}
+pre.rl-code{font-family:var(--mono);font-size:14px;line-height:1.55;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:0;white-space:pre-wrap;word-break:break-word}
+.rl-lines{display:grid;gap:6px}
+.rl-line{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:10px;align-items:start}
+@media (max-width:800px){.rl-line{grid-template-columns:1fr}}
+.rl-parts{display:grid;gap:6px;margin-top:10px}
+.rl-parts>div{display:grid;grid-template-columns:minmax(90px,max-content) 1fr;gap:10px;align-items:start}
+code.rl-chip{background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:1px 8px;font-weight:700;white-space:nowrap}
+.tk-s{color:#a3380f}.tk-f{color:#1f5fa8;font-weight:600}.tk-o{color:#b3412e;font-weight:700}.tk-k{color:#7a3e9d}.tk-n{color:#2f7d4a}.tk-c{color:#7a8088;font-style:italic}
+:root[data-theme="dark"] .tk-s{color:#f0a37a}:root[data-theme="dark"] .tk-f{color:#8cc4f0}:root[data-theme="dark"] .tk-n{color:#8fd4a6}:root[data-theme="dark"] .tk-k{color:#d0a4f0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tk-s{color:#f0a37a}:root:not([data-theme="light"]) .tk-f{color:#8cc4f0}:root:not([data-theme="light"]) .tk-n{color:#8fd4a6}:root:not([data-theme="light"]) .tk-k{color:#d0a4f0}}

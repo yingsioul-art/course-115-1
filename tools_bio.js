@@ -228,6 +228,28 @@ boxplot(BMI ~ depart, data = b, col = "lightblue", main = "各組 BMI")
     })();
     return webRP;
   }
+  // 共用 R 執行器（給「R 語法逐行教學」用）
+  async function runR(code, opts = {}) {
+    const w = await getWebR(opts.log || (() => {}));
+    const sh = await new w.Shelter();
+    try {
+      // 每次從乾淨環境開始，避免沿用上一次留下的變數而誤判正確
+      if (opts.fresh) await w.evalRVoid("rm(list = ls(envir = globalenv()), envir = globalenv())");
+      const cap = await sh.captureR(code, { withAutoprint: true, captureStreams: true, captureConditions: false, captureGraphics: { width: 520, height: 360 } });
+      const out = cap.output;
+      // R 的錯誤會以 stderr 形式回傳（並中止後續程式）
+      const errIdx = out.findIndex((o) => o.type === "stderr" && /^Error/.test(o.data));
+      const error = errIdx >= 0 ? out.slice(errIdx).filter((o) => o.type === "stderr").map((o) => o.data).join("\n") : null;
+      let ok = null;
+      if (opts.check && !error) {
+        const chk = await sh.captureR(`cat(tryCatch(isTRUE(${opts.check}), error = function(e) FALSE))`, { captureStreams: true, captureConditions: false });
+        ok = chk.output.some((o) => /TRUE/.test(o.data));
+      }
+      return { out, images: cap.images, ok, error };
+    } finally { await sh.purge(); }
+  }
+  window.RRUN = { runR };
+
   TOOLS.r = function (main, U) {
     main.innerHTML = `<div class="card"><h2>💻 線上跑 R（實習課）</h2><div class="muted small">程式在你的瀏覽器裡執行（webR），不用安裝 R。左邊選練習、改程式，按「執行」或 <b>Ctrl+Enter</b>。練習資料 scores.csv、bmi.csv 已經放在工作資料夾（公開版為模擬資料，數字會和課堂不同）。</div></div>
       <div class="lab-grid"><div class="card"><select id="rx" style="width:100%;margin-bottom:8px">${EX.map((e, i) => `<option value="${i}">${U.esc(e.t)}</option>`).join("")}</select>

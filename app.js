@@ -320,7 +320,7 @@
     const T = (window.TOOLS || {})[id];
     if (!T) return viewHome();
     main.innerHTML = "";
-    T(main, { $, esc, load, save, toast, refLink, fmt });
+    T(main, { $, esc, load, save, toast, refLink, fmt, renderQ, qById });
   }
 
   // ---------- 路由 ----------
@@ -330,7 +330,7 @@
     const [path, qs] = raw.split("?");
     const parts = path.split("/");
     const params = new URLSearchParams(qs || "");
-    const crumb = { home: "", pre: "前測診斷", lec: window.PUBLIC ? "講義重點" : "講義＋原音", map: "概念地圖", gl: "名詞對照", quiz: "自我檢測", case: "臨床情境", wrong: "錯題本", tool: "實作" }[parts[0]] || "";
+    const crumb = { home: "", pre: "前測診斷", lec: window.PUBLIC ? "講義重點" : "講義＋原音", map: "概念地圖", gl: "名詞對照", quiz: "自我檢測", case: "臨床情境", wrong: "錯題本", tool: "實作／練習" }[parts[0]] || "";
     $("#crumb").textContent = crumb ? "／" + crumb : "";
     window.scrollTo(0, 0);
     switch (parts[0]) {
